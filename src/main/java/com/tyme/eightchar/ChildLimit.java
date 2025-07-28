@@ -5,6 +5,7 @@ import com.tyme.eightchar.provider.impl.DefaultChildLimitProvider;
 import com.tyme.enums.Gender;
 import com.tyme.enums.YinYang;
 import com.tyme.lunar.LunarYear;
+import com.tyme.sixtycycle.SixtyCycleYear;
 import com.tyme.solar.SolarTerm;
 import com.tyme.solar.SolarTime;
 
@@ -159,12 +160,21 @@ public class ChildLimit {
   }
 
   /**
-   * 大运
+   * 起运大运
    *
    * @return 大运
    */
   public DecadeFortune getStartDecadeFortune() {
     return DecadeFortune.fromChildLimit(this, 0);
+  }
+
+  /**
+   * 所属大运
+   *
+   * @return 大运
+   */
+  public DecadeFortune getDecadeFortune() {
+    return DecadeFortune.fromChildLimit(this, -1);
   }
 
   /**
@@ -180,9 +190,48 @@ public class ChildLimit {
    * 结束农历年
    *
    * @return 农历年
+   * @see #getEndSixtyCycleYear()
    */
+  @Deprecated
   public LunarYear getEndLunarYear() {
     return LunarYear.fromYear(getStartTime().getLunarHour().getYear() + getEndTime().getYear() - getStartTime().getYear());
+  }
+
+  /**
+   * 开始(即出生)干支年
+   *
+   * @return 干支年
+   */
+  public SixtyCycleYear getStartSixtyCycleYear() {
+    return SixtyCycleYear.fromYear(getStartTime().getYear());
+  }
+
+  /**
+   * 结束(即起运)干支年
+   *
+   * @return 干支年
+   */
+  public SixtyCycleYear getEndSixtyCycleYear() {
+    return SixtyCycleYear.fromYear(getEndTime().getYear());
+  }
+
+  /**
+   * 开始年龄
+   *
+   * @return 开始年龄
+   */
+  public int getStartAge() {
+    return 1;
+  }
+
+  /**
+   * 结束年龄
+   *
+   * @return 结束年龄
+   */
+  public int getEndAge() {
+    int n = getEndSixtyCycleYear().getYear() - getStartSixtyCycleYear().getYear();
+    return Math.max(n, 1);
   }
 
 }

@@ -17,8 +17,10 @@ import com.tyme.holiday.LegalHoliday;
 import com.tyme.jd.JulianDay;
 import com.tyme.lunar.LunarDay;
 import com.tyme.lunar.LunarMonth;
+import com.tyme.rabbyung.RabByungDay;
 import com.tyme.sixtycycle.HideHeavenStem;
 import com.tyme.sixtycycle.HideHeavenStemDay;
+import com.tyme.sixtycycle.SixtyCycleDay;
 
 /**
  * 公历日
@@ -211,19 +213,28 @@ public class SolarDay extends AbstractTyme {
   }
 
   /**
+   * 候
+   *
+   * @return 候
+   */
+  public Phenology getPhenology() {
+    return getPhenologyDay().getPhenology();
+  }
+
+  /**
    * 七十二候
    *
    * @return 七十二候
    */
   public PhenologyDay getPhenologyDay() {
-    SolarTerm term = getTerm();
-    int dayIndex = subtract(term.getJulianDay().getSolarDay());
+    SolarTermDay d = getTermDay();
+    int dayIndex = d.getDayIndex();
     int index = dayIndex / 5;
     if (index > 2) {
       index = 2;
     }
-    dayIndex -= index * 5;
-    return new PhenologyDay(Phenology.fromIndex(term.getIndex() * 3 + index), dayIndex);
+    SolarTerm term = d.getSolarTerm();
+    return new PhenologyDay(Phenology.fromIndex(term.getYear(), term.getIndex() * 3 + index), dayIndex - index * 5);
   }
 
   /**
@@ -384,6 +395,24 @@ public class SolarDay extends AbstractTyme {
       days += m.getDayCount();
     }
     return LunarDay.fromYmd(m.getYear(), m.getMonthWithLeap(), days + 1);
+  }
+
+  /**
+   * 干支日
+   *
+   * @return 干支日
+   */
+  public SixtyCycleDay getSixtyCycleDay() {
+    return SixtyCycleDay.fromSolarDay(this);
+  }
+
+  /**
+   * 藏历日
+   *
+   * @return 藏历日
+   */
+  public RabByungDay getRabByungDay() {
+    return RabByungDay.fromSolarDay(this);
   }
 
   /**

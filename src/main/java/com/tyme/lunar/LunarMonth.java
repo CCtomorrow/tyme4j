@@ -263,23 +263,21 @@ public class LunarMonth extends AbstractTyme {
     }
     int m = indexInYear + 1 + n;
     LunarYear y = year;
-    int leapMonth = y.getLeapMonth();
     if (n > 0) {
-      int monthCount = leapMonth > 0 ? 13 : 12;
+      int monthCount = y.getMonthCount();
       while (m > monthCount) {
         m -= monthCount;
         y = y.next(1);
-        leapMonth = y.getLeapMonth();
-        monthCount = leapMonth > 0 ? 13 : 12;
+        monthCount = y.getMonthCount();
       }
     } else {
       while (m <= 0) {
         y = y.next(-1);
-        leapMonth = y.getLeapMonth();
-        m += leapMonth > 0 ? 13 : 12;
+        m += y.getMonthCount();
       }
     }
     boolean leap = false;
+    int leapMonth = y.getLeapMonth();
     if (leapMonth > 0) {
       if (m == leapMonth + 1) {
         leap = true;
@@ -292,7 +290,7 @@ public class LunarMonth extends AbstractTyme {
   }
 
   /**
-   * 获取本月的农历日列表
+   * 本月的农历日列表
    *
    * @return 农历日列表
    */
@@ -308,7 +306,7 @@ public class LunarMonth extends AbstractTyme {
   }
 
   /**
-   * 获取本月的农历周列表
+   * 本月的农历周列表
    *
    * @param start 星期几作为一周的开始，1234560分别代表星期一至星期天
    * @return 周列表

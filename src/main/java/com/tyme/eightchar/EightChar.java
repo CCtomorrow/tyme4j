@@ -5,6 +5,7 @@ import com.tyme.culture.Duty;
 import com.tyme.sixtycycle.EarthBranch;
 import com.tyme.sixtycycle.HeavenStem;
 import com.tyme.sixtycycle.SixtyCycle;
+import com.tyme.sixtycycle.SixtyCycleDay;
 import com.tyme.solar.SolarDay;
 import com.tyme.solar.SolarTerm;
 import com.tyme.solar.SolarTime;
@@ -126,10 +127,17 @@ public class EightChar extends AbstractCulture {
    * @return 命宫
    */
   public SixtyCycle getOwnSign() {
-    int offset = month.getEarthBranch().next(-1).getIndex() + hour.getEarthBranch().next(-1).getIndex();
+    int m = month.getEarthBranch().getIndex() - 1;
+    if (m < 1) {
+      m += 12;
+    }
+    int h = hour.getEarthBranch().getIndex() - 1;
+    if (h < 1) {
+      h += 12;
+    }
+    int offset = m + h;
     offset = (offset >= 14 ? 26 : 14) - offset;
-    offset -= 1;
-    return SixtyCycle.fromName(HeavenStem.fromIndex((year.getHeavenStem().getIndex() + 1) * 2 + offset).getName() + EarthBranch.fromIndex(2 + offset).getName());
+    return SixtyCycle.fromName(HeavenStem.fromIndex((year.getHeavenStem().getIndex() + 1) * 2 + offset - 1).getName() + EarthBranch.fromIndex(offset + 1).getName());
   }
 
   /**
@@ -138,17 +146,24 @@ public class EightChar extends AbstractCulture {
    * @return 身宫
    */
   public SixtyCycle getBodySign() {
-    int offset = month.getEarthBranch().getIndex() + hour.getEarthBranch().getIndex();
-    offset %= 12;
-    offset -= 1;
-    return SixtyCycle.fromName(HeavenStem.fromIndex((year.getHeavenStem().getIndex() + 1) * 2 + offset).getName() + EarthBranch.fromIndex(2 + offset).getName());
+    int offset = month.getEarthBranch().getIndex() - 1;
+    if (offset < 1) {
+      offset += 12;
+    }
+    offset += hour.getEarthBranch().getIndex() + 1;
+    if (offset > 12) {
+      offset -= 12;
+    }
+    return SixtyCycle.fromName(HeavenStem.fromIndex((year.getHeavenStem().getIndex() + 1) * 2 + offset - 1).getName() + EarthBranch.fromIndex(offset + 1).getName());
   }
 
   /**
    * 建除十二值神
    *
    * @return 建除十二值神
+   * @see SixtyCycleDay#getDuty()
    */
+  @Deprecated
   public Duty getDuty() {
     return Duty.fromIndex(day.getEarthBranch().getIndex() - month.getEarthBranch().getIndex());
   }
