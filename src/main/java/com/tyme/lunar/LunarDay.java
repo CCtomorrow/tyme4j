@@ -9,10 +9,7 @@ import com.tyme.culture.star.six.SixStar;
 import com.tyme.culture.star.twelve.TwelveStar;
 import com.tyme.culture.star.twentyeight.TwentyEightStar;
 import com.tyme.festival.LunarFestival;
-import com.tyme.sixtycycle.EarthBranch;
-import com.tyme.sixtycycle.HeavenStem;
-import com.tyme.sixtycycle.SixtyCycle;
-import com.tyme.sixtycycle.SixtyCycleDay;
+import com.tyme.sixtycycle.*;
 import com.tyme.solar.SolarDay;
 import com.tyme.solar.SolarTerm;
 
@@ -233,11 +230,9 @@ public class LunarDay extends AbstractTyme {
   public NineStar getNineStar() {
     SolarDay d = getSolarDay();
     SolarTerm dongZhi = SolarTerm.fromIndex(d.getYear(), 0);
-    SolarTerm xiaZhi = dongZhi.next(12);
-    SolarTerm dongZhi2 = dongZhi.next(24);
-    SolarDay dongZhiSolar = dongZhi.getJulianDay().getSolarDay();
-    SolarDay xiaZhiSolar = xiaZhi.getJulianDay().getSolarDay();
-    SolarDay dongZhiSolar2 = dongZhi2.getJulianDay().getSolarDay();
+    SolarDay dongZhiSolar = dongZhi.getSolarDay();
+    SolarDay xiaZhiSolar = dongZhi.next(12).getSolarDay();
+    SolarDay dongZhiSolar2 = dongZhi.next(24).getSolarDay();
     int dongZhiIndex = dongZhiSolar.getLunarDay().getSixtyCycle().getIndex();
     int xiaZhiIndex = xiaZhiSolar.getLunarDay().getSixtyCycle().getIndex();
     int dongZhiIndex2 = dongZhiSolar2.getLunarDay().getSixtyCycle().getIndex();
@@ -277,12 +272,29 @@ public class LunarDay extends AbstractTyme {
   }
 
   /**
+   * 月相第几天
+   *
+   * @return 月相第几天
+   */
+  public PhaseDay getPhaseDay() {
+    SolarDay today = getSolarDay();
+    LunarMonth m = month.next(1);
+    Phase p = Phase.fromIndex(m.getYear(), m.getMonthWithLeap(), 0);
+    SolarDay d = p.getSolarDay();
+    while (d.isAfter(today)) {
+      p = p.next(-1);
+      d = p.getSolarDay();
+    }
+    return new PhaseDay(p, today.subtract(d));
+  }
+
+  /**
    * 月相
    *
    * @return 月相
    */
   public Phase getPhase() {
-    return Phase.fromIndex(day - 1);
+    return getPhaseDay().getPhase();
   }
 
   /**
@@ -389,5 +401,14 @@ public class LunarDay extends AbstractTyme {
    */
   public MinorRen getMinorRen() {
     return getLunarMonth().getMinorRen().next(day - 1);
+  }
+
+  /**
+   * 三柱
+   *
+   * @return 三柱
+   */
+  public ThreePillars getThreePillars() {
+    return getSixtyCycleDay().getThreePillars();
   }
 }
